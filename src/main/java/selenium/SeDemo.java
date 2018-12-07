@@ -25,10 +25,10 @@ public class SeDemo {
     WebDriver driver;
     WebDriver.Navigation navigation;
     WebDriverWait wait;
-    String loginUrl = "https://c2staging.hairongyi.com/member/login";
-    String bidUrl = "https://c2staging.hairongyi.com/bid/2857";
-    String username = "13912340001";
-    String password = "qweasd123";
+    String loginUrl = "https://staging.hairongyi.com/member/login";
+    String bidUrl = "https://staging.hairongyi.com/bid/539040";
+    String username = "13564626936";
+    String password = "dlmm1234";
     String passwordPay = "123456";
     String superVerifyCode = "Ed%8r5";
 
@@ -60,7 +60,8 @@ public class SeDemo {
         WebElement verifyCode = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("verifyCode")));
         verifyCode.clear();
         verifyCode.sendKeys(superVerifyCode);
-        driver.findElement(By.xpath("//*[@id=\"myform\"]/div[5]/a")).click();
+        //点击登录按钮
+        driver.findElement(By.xpath("//*[@id=\"myform\"]/div[4]/a")).click();
 
         //登录成功返回首页
         wait.until(ExpectedConditions.titleIs("首页 | 海融易"));
@@ -82,31 +83,36 @@ public class SeDemo {
         //导航到标的出借页面
         navigation.to(bidUrl);
         WebElement loanBtn = wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("立即出借")));
+//      WebElement input = driver.findElement(By.xpath("/html/body/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div[1]/input"));
         WebElement input = driver.findElement(By.xpath("/html/body/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div[1]/input"));
         input.clear();
         //随机出借金额[1,6),即1-5块随机
-        Integer i = RandomUtils.nextInt(1, 6);
+        Integer i = RandomUtils.nextInt(1, 2);
 
         input.sendKeys(i + "");
         loanBtn.click();
 
+
         //出借确认
         WebElement confirm = wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("确认支付")));
+        //同意协议
+        WebElement agree = driver.findElement(By.xpath("/html/body/div/section/div/div/div/div[3]/div/p[1]/input"));
+        agree.click();
         confirm.click();
         System.out.println("---本次出借金额: " + i);
 
         //恒丰网关支付
         while (true) {
             Set<String> windowHandles = driver.getWindowHandles();
-            if(windowHandles.size()<2){
+            if (windowHandles.size() < 2) {
                 continue;
             }
             List<String> it = new ArrayList<String>(windowHandles);
             driver.switchTo().window(it.get(1));
-            WebElement password = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("password")));
+/*            WebElement password = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("password")));
             password.sendKeys(passwordPay);
             WebElement nextButton = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nextButton")));
-            nextButton.click();
+            nextButton.click();*/
             driver.close();
             driver.switchTo().window(it.get(0));
             break;
